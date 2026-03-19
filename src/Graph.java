@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -130,5 +131,67 @@ public class Graph {
             // And close the edge array
             System.out.print("]\n");
         });
+    }
+
+
+    // A function to convert graphs from adjacency lists to matrix
+    public double[][] convert_to_matrix() {
+
+        // First, get the number of vertices in the graph
+        int vertex_count = adjacencyList.size();
+
+        // Then, create a square matrix with the size: count x count
+        double[][] matrix = new double[vertex_count][vertex_count];
+
+        // Initialize the matrix where all weights are infinity
+        for (double[] row: matrix) {
+            Arrays.fill(row, Double.POSITIVE_INFINITY);
+        }
+
+        // And for diagonals, set them to zero
+        for (int i = 0; i < vertex_count; i++) {
+            matrix[i][i] = 0;
+        }
+
+        // We collect and sort the vertices first
+        ArrayList<Vertex> sorted_vertex_list = this.getSortedVertices();
+
+        // And we assign an index to each vertex
+        Map<Vertex, Integer> vertex_with_index = new HashMap<>();
+        for (int i = 0; i < vertex_count; i++) {
+            vertex_with_index.put(sorted_vertex_list.get(i), i);
+        }
+
+        // Loop through the adjacency list
+        for (Map.Entry<Vertex, ArrayList<Edge>> entry : adjacencyList.entrySet()) {
+
+            // Loop through each edge
+            for (Edge edge: entry.getValue()) {
+
+                // Find the index of the starting and ending node
+                int starting_node_index = vertex_with_index.get(edge.startNode);
+                int ending_node_index = vertex_with_index.get(edge.endNode);
+
+                // Assign weight to the matrix
+                matrix[starting_node_index][ending_node_index] = edge.weight;
+            }
+        }
+
+        // Return the matrix once done
+        return matrix;
+    }
+
+
+    // A method to sort the list of vertices
+    public ArrayList<Vertex> getSortedVertices() {
+
+        // Get the current list of vertices
+        ArrayList<Vertex> vertexList = new ArrayList<>(adjacencyList.keySet());
+
+        // Perform sorting on it
+        vertexList.sort((a, b) -> a.label.compareToIgnoreCase(b.label));
+
+        // And return the vertex list
+        return vertexList;
     }
 }
