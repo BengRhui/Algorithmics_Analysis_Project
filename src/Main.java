@@ -6,6 +6,7 @@ public class Main {
     // A record to store each graph
     private record GraphInList(Graph graph, Graph.Vertex start, Graph.Vertex end) {}
     private record GraphInMatrix(double[][] matrix, ArrayList<Graph.Vertex> vertexList, Graph.Vertex start, Graph.Vertex end) {}
+
     private static final ArrayList<GraphInList> adjacency_list_array = new ArrayList<>();
     private static final ArrayList<GraphInMatrix> adjacency_matrix_array = new ArrayList<>();
 
@@ -46,6 +47,15 @@ public class Main {
 
             // And print the starting and ending node
             System.out.println("Start node: " + graph_in_matrix.start + ", End node: " + graph_in_matrix.end);
+
+            System.out.println("\n--- Shortest path ---");
+            System.out.println(Floyd_Warshall.getShortestPath(
+                    graph_in_matrix.matrix,
+                    graph_in_matrix.vertexList,
+                    graph_in_matrix.start,
+                    graph_in_matrix.end
+            ));
+
             System.out.println();
         }
     }
