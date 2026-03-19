@@ -77,7 +77,7 @@ public class Main {
             adjacency_list_array.add(list_result);
 
             // Lastly, convert the graph into matrix format and store in an array
-            GraphInMatrix matrix_result = new GraphInMatrix(graph.convert_to_matrix(), graph.getSortedVertices(), start_vertex, end_vertex);
+            GraphInMatrix matrix_result = new GraphInMatrix(graph.convertToMatrix(), graph.getSortedVertices(), start_vertex, end_vertex);
             adjacency_matrix_array.add(matrix_result);
         }
     }

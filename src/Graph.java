@@ -61,20 +61,20 @@ public class Graph {
             input = input.substring(1, input.length() - 1);
             
             // Then, split them
-            String[] split_elements = input.split(",");
+            String[] splitElements = input.split(",");
             
             // Find the starting vertex, ending vertex, and weight
-            Vertex startVertex = switch (Vertex.find(split_elements[0])) {
+            Vertex startVertex = switch (Vertex.find(splitElements[0])) {
                 case Vertex found -> found;
-                case null -> new Vertex(split_elements[0].trim());
+                case null -> new Vertex(splitElements[0].trim());
             };
 
-            Vertex endVertex = switch (Vertex.find(split_elements[1])) {
+            Vertex endVertex = switch (Vertex.find(splitElements[1])) {
                 case Vertex found -> found;
-                case null -> new Vertex(split_elements[1].trim());
+                case null -> new Vertex(splitElements[1].trim());
             };
             
-            double weight = Double.parseDouble(split_elements[2].trim());
+            double weight = Double.parseDouble(splitElements[2].trim());
             
             // Lastly, we can create the edge
             return new Edge(startVertex, endVertex, weight);
@@ -85,19 +85,19 @@ public class Graph {
     private final Map<Vertex, ArrayList<Edge>> adjacencyList = new HashMap<>();
 
     // Data will be in the format of [(A, B, 1); (B, C, 2); ...]
-    public Graph(String input_text) {
+    public Graph(String inputText) {
 
         // First, remove the brackets '[' and ']'
-        input_text = input_text.trim().substring(1, input_text.length() - 1);
+        inputText = inputText.trim().substring(1, inputText.length() - 1);
         
         // Split the inputs into arrays
-        String[] split_array = input_text.split("; ");
+        String[] splitArray = inputText.split("; ");
         
         // Create an array to store the converted edges
         ArrayList<Edge> edgeArray = new ArrayList<>();
         
         // All elements in the array are edges, so convert them first
-        for (String textEdge: split_array) {
+        for (String textEdge: splitArray) {
             
             // Convert first
             Edge edge = Edge.fromText(textEdge);
@@ -118,13 +118,13 @@ public class Graph {
     public void printGraph() {
 
         // Loop the map for each vertex and edge array
-        adjacencyList.forEach((vertex, edge_array) -> {
+        adjacencyList.forEach((vertex, edgeArray) -> {
 
             // Print the vertex
             System.out.print(vertex.label() + " -> [");
 
             // Followed by the edges in the edge array
-            for (Edge edge : edge_array) {
+            for (Edge edge : edgeArray) {
                 System.out.print("(" + edge.endNode.label() + ", w=" + edge.weight + "), ");
             }
 
@@ -135,13 +135,13 @@ public class Graph {
 
 
     // A function to convert graphs from adjacency lists to matrix
-    public double[][] convert_to_matrix() {
+    public double[][] convertToMatrix() {
 
         // First, get the number of vertices in the graph
-        int vertex_count = adjacencyList.size();
+        int vertexCount = adjacencyList.size();
 
         // Then, create a square matrix with the size: count x count
-        double[][] matrix = new double[vertex_count][vertex_count];
+        double[][] matrix = new double[vertexCount][vertexCount];
 
         // Initialize the matrix where all weights are infinity
         for (double[] row: matrix) {
@@ -149,17 +149,17 @@ public class Graph {
         }
 
         // And for diagonals, set them to zero
-        for (int i = 0; i < vertex_count; i++) {
+        for (int i = 0; i < vertexCount; i++) {
             matrix[i][i] = 0;
         }
 
         // We collect and sort the vertices first
-        ArrayList<Vertex> sorted_vertex_list = this.getSortedVertices();
+        ArrayList<Vertex> sortedVertexList = this.getSortedVertices();
 
         // And we assign an index to each vertex
-        Map<Vertex, Integer> vertex_with_index = new HashMap<>();
-        for (int i = 0; i < vertex_count; i++) {
-            vertex_with_index.put(sorted_vertex_list.get(i), i);
+        Map<Vertex, Integer> vertexWithIndex = new HashMap<>();
+        for (int i = 0; i < vertexCount; i++) {
+            vertexWithIndex.put(sortedVertexList.get(i), i);
         }
 
         // Loop through the adjacency list
@@ -169,11 +169,11 @@ public class Graph {
             for (Edge edge: entry.getValue()) {
 
                 // Find the index of the starting and ending node
-                int starting_node_index = vertex_with_index.get(edge.startNode);
-                int ending_node_index = vertex_with_index.get(edge.endNode);
+                int startingNodeIndex = vertexWithIndex.get(edge.startNode);
+                int endingNodeIndex = vertexWithIndex.get(edge.endNode);
 
                 // Assign weight to the matrix
-                matrix[starting_node_index][ending_node_index] = edge.weight;
+                matrix[startingNodeIndex][endingNodeIndex] = edge.weight;
             }
         }
 
