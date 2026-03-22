@@ -27,6 +27,12 @@ public class Main {
         for (GraphInList graph_in_list : adjacency_list_array) {
             graph_in_list.graph.printGraph();
             System.out.println("Start node: " + graph_in_list.start + ", End node: " + graph_in_list.end);
+            System.out.println("\n--- Shortest path (Bellman-Ford) ---");
+            System.out.println(Bellman_Ford.getShortestPath(
+                    graph_in_list.graph,
+                    graph_in_list.start,
+                    graph_in_list.end
+            ));
             System.out.println();
         }
 

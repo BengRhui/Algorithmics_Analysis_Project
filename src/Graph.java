@@ -42,7 +42,7 @@ public class Graph {
     }
 
     // Class for edge
-    private static class Edge {
+    public static class Edge {
         Vertex startNode;
         Vertex endNode;
         double weight;
@@ -193,5 +193,19 @@ public class Graph {
 
         // And return the vertex list
         return vertexList;
+    }
+
+    // Provide read-only access to all directed edges (returns copies)
+    public ArrayList<Edge> getEdges() {
+
+        ArrayList<Edge> edges = new ArrayList<>();
+
+        adjacencyList.forEach((vertex, edgeArray) -> {
+            for (Edge edge : edgeArray) {
+                edges.add(new Edge(edge.startNode, edge.endNode, edge.weight));
+            }
+        });
+
+        return edges;
     }
 }
