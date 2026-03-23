@@ -47,6 +47,7 @@ public class Bellman_Ford {
 			}
 		}
 
+		// Algorithm starts here:
 		// Relax edges |V|-1 times
 		for (int i = 0; i < verticesCount - 1; i++) {
 			boolean updated = false;
@@ -75,18 +76,23 @@ public class Bellman_Ford {
 			}
 		}
 
+		// Algorithm ends here.
+
 		double shortest = dist[endIdx];
+
+		// Check if the destination is unreachable
 		if (shortest == Double.POSITIVE_INFINITY) {
 			return "Distance from " + start + " to " + destination + " is: Not found";
 		}
 
-		// Reconstruct path
+		// Construct the shortest path by backtracking from destination
 		ArrayList<String> path = new ArrayList<>();
-		int cur = endIdx;
-		while (cur != -1) {
-			path.add(0, vertices.get(cur).label());
-			if (cur == startIdx) break;
-			cur = prev[cur];
+		int current = endIdx;
+		
+		while (current != -1) {
+			path.add(0, vertices.get(current).label());
+			if (current == startIdx) break;
+			current = prev[current];
 		}
 
 		if (path.isEmpty() || !path.get(0).equals(start.label())) {
