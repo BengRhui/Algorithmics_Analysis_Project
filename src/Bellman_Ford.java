@@ -30,6 +30,7 @@ public class Bellman_Ford {
 		}
 
 		// Initialize distance and predecessor arrays
+		// Set all distances to infinity as haven't reached yet
 		double[] dist = new double[verticesCount];
 		int[] prev = new int[verticesCount];
 
@@ -48,9 +49,17 @@ public class Bellman_Ford {
 		}
 
 		// Algorithm starts here:
-		// Relax edges |V|-1 times
+		// Relax edges V (number of edges) - 1 times
+		/*
+		 Check dist[u] is known, then if the new path from u to v is shorter than the previously known path to v,
+		 Update dist[v] and prev[v].
+		 If no, do nothing.
+
+		 Keep repeat until all vertices are processed.
+		 If in one iteration, no update is made, it means all shortest paths are found, can exit early.
+		 */
 		for (int i = 0; i < verticesCount - 1; i++) {
-			boolean updated = false;
+//			boolean updated = false;
 
 			for (EdgeIndex edge : edges) {
 				if (dist[edge.u] == Double.POSITIVE_INFINITY) continue;
@@ -61,14 +70,19 @@ public class Bellman_Ford {
 					// Update new distance and predecessor
 					dist[edge.v] = newDist;
 					prev[edge.v] = edge.u;
-					updated = true;
+//					updated = true;
 				}
 			}
 
-			if (!updated) break; 		// If no updates, shortest paths are found, can exit early
+//			if (!updated) break; 		// If no updates, shortest paths are found, can exit early
 		}
 
 		// Negative cycle detection reachable from start
+		/*
+		After all iterations, if we can still relax any edge, it means there is a negative cycle reachable from the start vertex.
+		such as [A, B, -1]
+		If there is a negative cycle, the shortest path is invalid as can keep going through the negative edge to reduce the distance indefinitely.
+		 */
 		for (EdgeIndex e : edges) {
 			if (dist[e.u] == Double.POSITIVE_INFINITY) continue;
 			if (dist[e.u] + e.weight < dist[e.v]) {
