@@ -5,13 +5,14 @@ import java.util.Map;
 
 public class Bellman_Ford {
 
-	// Bellman-Ford shortest path with early stop when no edges relax
+	// Bellman-Ford is to find the shortest path with early stop when no edges relax
 	public static String getShortestPath(Graph graph, Graph.Vertex start, Graph.Vertex destination) {
 
+		// First, we sort the vertices and get the number of vertices
 		ArrayList<Graph.Vertex> vertices = graph.getSortedVertices();
 		int verticesCount = vertices.size();
 
-		// Check if start vertex and destination are the same
+		// Check if start vertex and destination are the same - return 0 if same
 		if (start.equals(destination)) {
 			return "Distance from " + start + " to " + destination + " is: 0";
 		}
@@ -25,24 +26,32 @@ public class Bellman_Ford {
 		// Get indices of start and destination vertices
 		Integer startIdx = indexOf.get(start);
 		Integer endIdx = indexOf.get(destination);
+
+		// Return error if no index is found
 		if (startIdx == null || endIdx == null) {
 			return "Error. No path is found.";
 		}
 
-		// Initialize distance and predecessor arrays
-		// Set all distances to infinity as haven't reached yet
+		// Initialize distance array - this records the distance from the starting node
 		double[] dist = new double[verticesCount];
-		int[] prev = new int[verticesCount];
-
 		Arrays.fill(dist, Double.POSITIVE_INFINITY);
+
+		// Initialize the predecessor array - this records the intermediary node that yields a shorter path
+		int[] prev = new int[verticesCount];
 		Arrays.fill(prev, -1);
+
+		// The distance from the starting node to itself is 0
 		dist[startIdx] = 0.0;
 
 		// Duplicate index-based edges into an array for processing
 		ArrayList<EdgeIndex> edges = new ArrayList<>();
 		for (Graph.Edge edge : graph.getEdges()) {
+
+			// Get the index of the start node and end node
 			Integer startNode = indexOf.get(edge.startNode);
 			Integer endNode = indexOf.get(edge.endNode);
+
+			// Create an edge index object
 			if (startNode != null && endNode != null) {
 				edges.add(new EdgeIndex(startNode, endNode, edge.weight));
 			}
@@ -58,65 +67,94 @@ public class Bellman_Ford {
 		 Keep repeat until all vertices are processed.
 		 If in one iteration, no update is made, it means all shortest paths are found, can exit early.
 		 */
+
+		// Loop through each vertex
 		for (int i = 0; i < verticesCount - 1; i++) {
-//			boolean updated = false;
 
+			// Optimization:
+			// boolean updated = false;
+
+			// Check all edges
 			for (EdgeIndex edge : edges) {
-				if (dist[edge.u] == Double.POSITIVE_INFINITY) continue;
 
-				// Check if the current path is shorter than the previously known path to destination
-				double newDist = dist[edge.u] + edge.weight;
-				if (newDist < dist[edge.v]) {
-					// Update new distance and predecessor
-					dist[edge.v] = newDist;
-					prev[edge.v] = edge.u;
-//					updated = true;
+				// If infinity, this indicates that the starting node is not reachable, hence skipped
+				if (dist[edge.startIndex] == Double.POSITIVE_INFINITY) continue;
+
+				// If not infinity (reachable), we calculate the new distance first
+				double newDist = dist[edge.startIndex] + edge.weight;
+
+				// Then we check if the path is shorter than the previously known path to destination
+				if (newDist < dist[edge.endIndex]) {
+
+					// If yes, update new distance and predecessor
+					dist[edge.endIndex] = newDist;
+					prev[edge.endIndex] = edge.startIndex;
+
+					// Optimization:
+					// updated = true;
 				}
 			}
 
-//			if (!updated) break; 		// If no updates, shortest paths are found, can exit early
+			// Optimized: If no updates, shortest paths are found, can exit early
+			// if (!updated) break;
 		}
 
-		// Negative cycle detection reachable from start
-		/*
-		After all iterations, if we can still relax any edge, it means there is a negative cycle reachable from the start vertex.
-		such as [A, B, -1]
-		If there is a negative cycle, the shortest path is invalid as can keep going through the negative edge to reduce the distance indefinitely.
-		 */
+		// --- Negative cycle detection ---
+
+		// After all iterations, if we can still relax any edge, it means there is a negative cycle reachable from the start vertex, e.g., [A, B, -1]
+		// If there is a negative cycle, the shortest path is invalid as it can keep going through the negative edge to reduce the distance indefinitely.
+
+		// Note: Negative paths are allowed, as long as it does not lead to infinite loops due to negative cycles, hence checking at the end
 		for (EdgeIndex e : edges) {
-			if (dist[e.u] == Double.POSITIVE_INFINITY) continue;
-			if (dist[e.u] + e.weight < dist[e.v]) {
+
+			// No issues with unreachable edges
+			if (dist[e.startIndex] == Double.POSITIVE_INFINITY) continue;
+
+			// If the distance can still be reduced, negative cycle exists, hence the path is invalid
+			if (dist[e.startIndex] + e.weight < dist[e.endIndex]) {
 				return "Negative cycle found from vertex " + start + ". This path is invalid.";
 			}
 		}
 
 		// Algorithm ends here.
 
+		// Get the shortest distance from start to end
 		double shortest = dist[endIdx];
 
-		// Check if the destination is unreachable
+		// If the destination is unreachable, display distance not found
 		if (shortest == Double.POSITIVE_INFINITY) {
 			return "Distance from " + start + " to " + destination + " is: Not found";
 		}
 
 		// Construct the shortest path by backtracking from destination
 		ArrayList<String> path = new ArrayList<>();
+
+		// Beginning from end index, we track the predecessor array
 		int current = endIdx;
-		
+
+		// If a path does not exist, the predecessor array has value -1
 		while (current != -1) {
-			path.add(0, vertices.get(current).label());
+
+			// Add the vertex to the front of the array
+			path.addFirst(vertices.get(current).label());
+
+			// End the search process if the starting vertex is found
 			if (current == startIdx) break;
+
+			// If not, continue the process with the found node
 			current = prev[current];
 		}
 
-		if (path.isEmpty() || !path.get(0).equals(start.label())) {
+		// Check for two conditions: the path is empty, or the path does not start with the starting label
+		if (path.isEmpty() || !path.getFirst().equals(start.label())) {
 			return "Error. No path is found.";
 		}
 
+		// If everything is fine, return the shortest distance and path
 		return "Distance from " + start + " to " + destination + " is: " + shortest +
 				"\nThe shortest path is: " + String.join(" -> ", path);
 	}
 
 	// Minimal edge holder for index-based relaxation
-	private record EdgeIndex(int u, int v, double weight) {}
+	private record EdgeIndex(int startIndex, int endIndex, double weight) {}
 }
