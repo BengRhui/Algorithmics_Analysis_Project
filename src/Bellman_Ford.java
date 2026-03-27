@@ -71,9 +71,6 @@ public class Bellman_Ford {
 		// Loop through each vertex
 		for (int i = 0; i < verticesCount - 1; i++) {
 
-			// Optimization:
-			// boolean updated = false;
-
 			// Check all edges
 			for (EdgeIndex edge : edges) {
 
@@ -89,14 +86,8 @@ public class Bellman_Ford {
 					// If yes, update new distance and predecessor
 					dist[edge.endIndex] = newDist;
 					prev[edge.endIndex] = edge.startIndex;
-
-					// Optimization:
-					// updated = true;
 				}
 			}
-
-			// Optimized: If no updates, shortest paths are found, can exit early
-			// if (!updated) break;
 		}
 
 		// --- Negative cycle detection ---
