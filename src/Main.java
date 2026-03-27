@@ -26,14 +26,6 @@ public class Main {
         System.out.println("Adjacency list:");
         for (GraphInList graph_in_list : adjacency_list_array) {
             graph_in_list.graph.printGraph();
-            System.out.println("Start node: " + graph_in_list.start + ", End node: " + graph_in_list.end);
-            System.out.println("\n--- Shortest path (Bellman-Ford) ---");
-            System.out.println(Bellman_Ford.getShortestPath(
-                    graph_in_list.graph,
-                    graph_in_list.start,
-                    graph_in_list.end
-            ));
-            System.out.println();
         }
 
         // Print matrix here
@@ -53,17 +45,47 @@ public class Main {
 
             // And print the starting and ending node
             System.out.println("Start node: " + graph_in_matrix.start + ", End node: " + graph_in_matrix.end);
-
-            System.out.println("\n--- Shortest path ---");
-            System.out.println(Floyd_Warshall.getShortestPath(
-                    graph_in_matrix.matrix,
-                    graph_in_matrix.vertexList,
-                    graph_in_matrix.start,
-                    graph_in_matrix.end
-            ));
-
             System.out.println();
         }
+
+        // Check algorithm performance - Graph 1
+        // Bellman-Ford
+        System.out.println("--- Bellman-Ford: Graph 1: ---");
+        System.out.println(Bellman_Ford.getShortestPath(
+                adjacency_list_array.getFirst().graph,
+                adjacency_list_array.getFirst().start,
+                adjacency_list_array.getFirst().end
+        ));
+        System.out.println();
+
+        // Floyd-Warshall
+        System.out.println("--- Floyd-Warshall: Graph 1: ---");
+        System.out.println(Floyd_Warshall.getShortestPath(
+                adjacency_matrix_array.getFirst().matrix,
+                adjacency_matrix_array.getFirst().vertexList,
+                adjacency_matrix_array.getFirst().start,
+                adjacency_matrix_array.getFirst().end
+        ));
+        System.out.println();
+
+        // Check algorithm performance - Graph 2
+        // Bellman-Ford
+        System.out.println("--- Bellman-Ford: Graph 2: ---");
+        System.out.println(Bellman_Ford.getShortestPath(
+                adjacency_list_array.get(1).graph,
+                adjacency_list_array.get(1).start,
+                adjacency_list_array.get(1).end
+        ));
+        System.out.println();
+
+        // Floyd-Warshall
+        System.out.println("--- Floyd-Warshall: Graph 2: ---");
+        System.out.println(Floyd_Warshall.getShortestPath(
+                adjacency_matrix_array.get(1).matrix,
+                adjacency_matrix_array.get(1).vertexList,
+                adjacency_matrix_array.get(1).start,
+                adjacency_matrix_array.get(1).end
+        ));
     }
 
     // This is the function where data is converted from text to graph and vertex objects
