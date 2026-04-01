@@ -129,10 +129,10 @@ public class Floyd_Warshall {
             return "Distance from " + start + " to " + end + " is: Not found";
 
         // Creating an array list to store the path
-        StringBuilder path = new StringBuilder();
+        ArrayList<String> path = new ArrayList<>();
 
         // Begin to store the first vertex
-        path.append(start.label()).append(" -> ");
+        path.add(start.label());
 
         // Now we try to traverse through the next matrix and search for the middle vertex
         int currentNodeIndex = startNodeIndex;
@@ -148,7 +148,7 @@ public class Floyd_Warshall {
                 return "Error. No path is found.";
 
             // Add the middle vertex into the path
-            path.append(vertexList.get(middleVertex).label()).append(" -> ");
+            path.add(vertexList.get(middleVertex).label());
 
             // Then update the current vertex to the middle vertex
             currentNodeIndex = middleVertex;
@@ -156,6 +156,6 @@ public class Floyd_Warshall {
         
         // Finally, the path is returned
         return "Distance from " + start + " to " + end + " is: " + shortestDistance +
-                "\nThe shortest path is: " + path.substring(0, path.length() - 4);     // Note: -4 is to remove the last ->
+                "\nThe shortest path is: " + String.join(" -> ", path);
     }
 }
