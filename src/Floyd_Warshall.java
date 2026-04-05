@@ -128,6 +128,13 @@ public class Floyd_Warshall {
         if (shortestDistance == Double.POSITIVE_INFINITY)
             return "Distance from " + start + " to " + end + " is: Not found";
 
+        // Optimization: Check for existence of negative cycles
+        for (int i = 0; i < matrixSize; i++) {
+            if (distMatrix[i][i] < 0) {
+                return "Negative cycle detected. Shortest path is invalid.";
+            }
+        }
+
         // Creating an array list to store the path
         ArrayList<String> path = new ArrayList<>();
 
