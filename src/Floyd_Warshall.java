@@ -127,11 +127,18 @@ public class Floyd_Warshall {
         // If both vertices are the same, return 0 (coz going from itself to itself costs nothing)
         if (startNodeIndex == endNodeIndex)
             return "Distance from " + start + " to " + end + " is: 0";
-        
-        // First, we check if any path exists. The weight is infinity if a path doesn't exist
-        double shortestDistance = distMatrix[startNodeIndex][endNodeIndex];
-        if (shortestDistance == Double.POSITIVE_INFINITY)
+
+        // First, we check if any path exists.
+        // If a path doesn't exist, either the weight is infinity, or distance matrix cannot be indexed (isolated nodes)
+        try {
+            double shortestDistance = distMatrix[startNodeIndex][endNodeIndex];
+            if (shortestDistance == Double.POSITIVE_INFINITY) throw new ArrayIndexOutOfBoundsException();
+        } catch (ArrayIndexOutOfBoundsException _) {
             return "Distance from " + start + " to " + end + " is: Not found";
+        }
+
+        // If the path exists, we can retrieve the shortest distance
+        double shortestDistance = distMatrix[startNodeIndex][endNodeIndex];
 
         // Creating an array list to store the path
         ArrayList<String> path = new ArrayList<>();
