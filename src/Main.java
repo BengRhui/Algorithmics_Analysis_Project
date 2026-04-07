@@ -17,22 +17,26 @@ public class Main {
 
         // A sample data for testing
         String example_input = """
-        [(P, Q, 2); (P, R, 4); (Q, R, 1); (Q, S, 7); (R, T, 3); (S, U, 1); (T, S, 2); (T, U, 5)] | P | U
+        [(A, B, 2); (B, C, 3); (A, C, 10); (C, D, 1)] | A | D
+        [(A, B, 1); (B, C, 2)] | A | D
+        [(A, B, 4); (A, C, 5); (B, C, -2)] | A | C
+        [(A, B, 3); (C, B, 1)] | A | C
         """;
 
         // Convert the string data into graph and vertex objects
         preprocessing_steps(example_input);
 
         // Floyd-Warshall
-        System.out.println("--- Floyd-Warshall: Graph ---");
-        System.out.println(Floyd_Warshall.getShortestPath(
-                adjacency_matrix_array.getFirst().matrix,
-                adjacency_matrix_array.getFirst().vertexList,
-                adjacency_matrix_array.getFirst().start,
-                adjacency_matrix_array.getFirst().end
-        ));
-        System.out.println();
-
+        for (int i = 0; i < adjacency_matrix_array.size(); i++) {
+            System.out.println("--- Floyd-Warshall: Graph " + (i + 1) + " ---");
+            System.out.println(Floyd_Warshall.getShortestPath(
+                    adjacency_matrix_array.get(i).matrix,
+                    adjacency_matrix_array.get(i).vertexList,
+                    adjacency_matrix_array.get(i).start,
+                    adjacency_matrix_array.get(i).end
+            ));
+            System.out.println();
+        }
 
         // Calculate and print average time
         double bellmanFordAvg = bellmanFordTime.stream()
