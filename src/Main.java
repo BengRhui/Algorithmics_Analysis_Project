@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -10,82 +12,72 @@ public class Main {
     private static final ArrayList<GraphInList> adjacency_list_array = new ArrayList<>();
     private static final ArrayList<GraphInMatrix> adjacency_matrix_array = new ArrayList<>();
 
+    private static final ArrayList<Long> bellmanFordTime = new ArrayList<>();
+    private static final ArrayList<Long> floydWarshallTime = new ArrayList<>();
+
     // Main function here
     public static void main(String[] args) {
 
         // A sample data for testing
         String example_input = """
-                [(A, B, 2); (B, D, 1); (A, D, 4); (D, C, 3)] | A | C
-                [(A, B, 10); (B, C, 6); (C, D, 4); (D, E, 8); (E, A, 10)] | C | E
-                """;
+        [(P, Q, 2); (P, R, 4); (Q, R, 1); (Q, S, 7); (R, T, 3); (S, U, 1); (T, S, 2); (T, U, 5)] | P | U
+        """;
 
         // Convert the string data into graph and vertex objects
         preprocessing_steps(example_input);
 
-        // Output the results here - list
-        System.out.println("Adjacency list:");
-        for (GraphInList graph_in_list : adjacency_list_array) {
-            graph_in_list.graph.printGraph();
-        }
+        // Retrieve the number of graphs from input
+        int numOfGraphs = adjacency_list_array.size();
+        int iterationCount = 1;
 
-        // Print matrix here
-        System.out.println("Adjacency matrix:");
-        for (GraphInMatrix graph_in_matrix : adjacency_matrix_array) {
+        // Check algorithm performance
+        for (int iter = 0; iter < iterationCount; iter++) {
+            for (int i = 0; i < numOfGraphs; i++) {
 
-            // Print the header row
-            System.out.println(Arrays.toString(graph_in_matrix.vertexList.toArray()));
+                // Bellman-Ford
+                System.out.println("--- Bellman-Ford: Graph " + (i + 1) + ": ---");
+                System.out.println(Bellman_Ford.getShortestPath(
+                        adjacency_list_array.get(i).graph,
+                        adjacency_list_array.get(i).start,
+                        adjacency_list_array.get(i).end
+                ));
+                System.out.println();
 
-            // Print the elements
-            for (double[] row: graph_in_matrix.matrix) {
-                for (double element: row) {
-                    System.out.printf("%-10s, ", element);
-                }
+                // Floyd-Warshall
+                System.out.println("--- Floyd-Warshall: Graph " + (i + 1) + ": ---");
+                System.out.println(Floyd_Warshall.getShortestPath(
+                        adjacency_matrix_array.get(i).matrix,
+                        adjacency_matrix_array.get(i).vertexList,
+                        adjacency_matrix_array.get(i).start,
+                        adjacency_matrix_array.get(i).end
+                ));
                 System.out.println();
             }
-
-            // And print the starting and ending node
-            System.out.println("Start node: " + graph_in_matrix.start + ", End node: " + graph_in_matrix.end);
-            System.out.println();
         }
 
-        // Check algorithm performance - Graph 1
-        // Bellman-Ford
-        System.out.println("--- Bellman-Ford: Graph 1: ---");
-        System.out.println(Bellman_Ford.getShortestPath(
-                adjacency_list_array.getFirst().graph,
-                adjacency_list_array.getFirst().start,
-                adjacency_list_array.getFirst().end
-        ));
-        System.out.println();
+        // Calculate and print average time
+        double bellmanFordAvg = bellmanFordTime.stream()
+                .mapToDouble(d -> d)
+                .average()
+                .orElse(0.0);
 
-        // Floyd-Warshall
-        System.out.println("--- Floyd-Warshall: Graph 1: ---");
-        System.out.println(Floyd_Warshall.getShortestPath(
-                adjacency_matrix_array.getFirst().matrix,
-                adjacency_matrix_array.getFirst().vertexList,
-                adjacency_matrix_array.getFirst().start,
-                adjacency_matrix_array.getFirst().end
-        ));
-        System.out.println();
+        double floydWarshallAvg = floydWarshallTime.stream()
+                .mapToDouble(d -> d)
+                .average()
+                .orElse(0.0);
 
-        // Check algorithm performance - Graph 2
-        // Bellman-Ford
-        System.out.println("--- Bellman-Ford: Graph 2: ---");
-        System.out.println(Bellman_Ford.getShortestPath(
-                adjacency_list_array.get(1).graph,
-                adjacency_list_array.get(1).start,
-                adjacency_list_array.get(1).end
-        ));
-        System.out.println();
+        System.out.println("Bellman-Ford Time (nanoseconds): " + bellmanFordAvg);
+        System.out.println("Floyd-Warshall Time (nanoseconds): " + floydWarshallAvg);
 
-        // Floyd-Warshall
-        System.out.println("--- Floyd-Warshall: Graph 2: ---");
-        System.out.println(Floyd_Warshall.getShortestPath(
-                adjacency_matrix_array.get(1).matrix,
-                adjacency_matrix_array.get(1).vertexList,
-                adjacency_matrix_array.get(1).start,
-                adjacency_matrix_array.get(1).end
-        ));
+        // Convert output to CSV
+        try {
+            PrintWriter writer = new PrintWriter("data.csv");
+            writer.println("Run,Bellman-Ford,Floyd-Warshall");
+            for (int i = 0; i < numOfGraphs * iterationCount; i++) {
+                writer.println((i + 1) + "," + bellmanFordTime.get(i) + "," + floydWarshallTime.get(i));
+            }
+            writer.close();
+        } catch (FileNotFoundException _) {}
     }
 
     // This is the function where data is converted from text to graph and vertex objects
@@ -118,5 +110,13 @@ public class Main {
             GraphInMatrix matrix_result = new GraphInMatrix(graph.convertToMatrix(), graph.getSortedVertices(), start_vertex, end_vertex);
             adjacency_matrix_array.add(matrix_result);
         }
+    }
+
+    public static void bellmanRecord(long start, long end) {
+        bellmanFordTime.add(end - start);
+    }
+
+    public static void floydRecord(long start, long end) {
+        floydWarshallTime.add(end - start);
     }
 }

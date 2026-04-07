@@ -68,6 +68,9 @@ public class Bellman_Ford {
 		 If in one iteration, no update is made, it means all shortest paths are found, can exit early.
 		 */
 
+		// Record time
+		long startTime = System.nanoTime();
+
 		// Loop through each vertex
 		for (int i = 0; i < verticesCount - 1; i++) {
 
@@ -89,6 +92,9 @@ public class Bellman_Ford {
 				}
 			}
 		}
+
+		// Record time
+		Main.bellmanRecord(startTime, System.nanoTime());
 
 		// --- Negative cycle detection ---
 

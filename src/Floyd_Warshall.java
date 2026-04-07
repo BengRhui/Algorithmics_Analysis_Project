@@ -92,7 +92,10 @@ public class Floyd_Warshall {
                 }
             }
         }
-        
+
+        // Record time
+        long startTime = System.nanoTime();
+
         // Now loop through each intermediate node
         for (int middle = 0; middle < matrixSize; middle++) {
 
@@ -114,6 +117,8 @@ public class Floyd_Warshall {
         }
 
         // Algorithm ends here. Remaining is just to retrieve the shortest path (guess should not be included in complexity calculation)
+        // Record time
+        Main.floydRecord(startTime, System.nanoTime());
 
         // Find the indices corresponding to the start and end vertices
         int startNodeIndex = vertexList.indexOf(start);
