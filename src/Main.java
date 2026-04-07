@@ -1,7 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Main {
 
@@ -112,10 +111,12 @@ public class Main {
         }
     }
 
+    // A function to record the time taken by each graph using Bellman-Ford algorithm
     public static void bellmanRecord(long start, long end) {
         bellmanFordTime.add(end - start);
     }
 
+    // A function to record the time taken by each graph using Floyd-Warshall algorithm
     public static void floydRecord(long start, long end) {
         floydWarshallTime.add(end - start);
     }
