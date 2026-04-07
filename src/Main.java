@@ -19,7 +19,10 @@ public class Main {
 
         // A sample data for testing
         String example_input = """
-        [(P, Q, 2); (P, R, 4); (Q, R, 1); (Q, S, 7); (R, T, 3); (S, U, 1); (T, S, 2); (T, U, 5)] | P | U
+        [(A,B,2); (A,C,3); (B,C,1); (C,D,4); (D,A,2); (B,D,3)] | A | D
+        [(A,B,1); (A,C,4); (A,D,2); (B,C,2); (B,E,3); (C,D,1); (D,E,2); (E,A,5)] | A | E
+        [(A,B,2); (A,C,5); (B,C,1); (B,D,3); (C,D,2); (C,E,4); (D,E,1); (E,F,3); (F,A,2); (D,F,5)] | A | F
+        [(A,B,3); (A,C,2); (A,D,4); (B,C,1); (B,E,5); (C,D,3); (C,F,6); (D,E,2); (E,F,1); (F,A,4); (D,F,2)] | A | F
         """;
 
         // Convert the string data into graph and vertex objects
@@ -27,7 +30,7 @@ public class Main {
 
         // Retrieve the number of graphs from input
         int numOfGraphs = adjacency_list_array.size();
-        int iterationCount = 1;
+        int iterationCount = 1000;
 
         // Check algorithm performance
         for (int iter = 0; iter < iterationCount; iter++) {
@@ -71,9 +74,13 @@ public class Main {
         // Convert output to CSV
         try {
             PrintWriter writer = new PrintWriter("data.csv");
-            writer.println("Run,Bellman-Ford,Floyd-Warshall");
+            writer.println("Run,Edge Num,Vertex Num,Bellman-Ford,Floyd-Warshall");
             for (int i = 0; i < numOfGraphs * iterationCount; i++) {
-                writer.println((i + 1) + "," + bellmanFordTime.get(i) + "," + floydWarshallTime.get(i));
+                writer.println((i + 1) + "," +
+                        adjacency_list_array.get(i % 4).graph.getEdges().size() + "," +
+                        adjacency_list_array.get(i % 4).graph.getSortedVertices().size() + "," +
+                        bellmanFordTime.get(i) + "," +
+                        floydWarshallTime.get(i));
             }
             writer.close();
         } catch (FileNotFoundException _) {}
