@@ -1,7 +1,4 @@
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Main {
 
@@ -26,34 +23,16 @@ public class Main {
         // Convert the string data into graph and vertex objects
         preprocessing_steps(example_input);
 
-        // Retrieve the number of graphs from input
-        int numOfGraphs = adjacency_list_array.size();
-        int iterationCount = 1;
+        // Floyd-Warshall
+        System.out.println("--- Floyd-Warshall: Graph ---");
+        System.out.println(Floyd_Warshall.getShortestPath(
+                adjacency_matrix_array.getFirst().matrix,
+                adjacency_matrix_array.getFirst().vertexList,
+                adjacency_matrix_array.getFirst().start,
+                adjacency_matrix_array.getFirst().end
+        ));
+        System.out.println();
 
-        // Check algorithm performance
-        for (int iter = 0; iter < iterationCount; iter++) {
-            for (int i = 0; i < numOfGraphs; i++) {
-
-                // Bellman-Ford
-                System.out.println("--- Bellman-Ford: Graph " + (i + 1) + ": ---");
-                System.out.println(Bellman_Ford.getShortestPath(
-                        adjacency_list_array.get(i).graph,
-                        adjacency_list_array.get(i).start,
-                        adjacency_list_array.get(i).end
-                ));
-                System.out.println();
-
-                // Floyd-Warshall
-                System.out.println("--- Floyd-Warshall: Graph " + (i + 1) + ": ---");
-                System.out.println(Floyd_Warshall.getShortestPath(
-                        adjacency_matrix_array.get(i).matrix,
-                        adjacency_matrix_array.get(i).vertexList,
-                        adjacency_matrix_array.get(i).start,
-                        adjacency_matrix_array.get(i).end
-                ));
-                System.out.println();
-            }
-        }
 
         // Calculate and print average time
         double bellmanFordAvg = bellmanFordTime.stream()
@@ -68,16 +47,6 @@ public class Main {
 
         System.out.println("Bellman-Ford Time (nanoseconds): " + bellmanFordAvg);
         System.out.println("Floyd-Warshall Time (nanoseconds): " + floydWarshallAvg);
-
-        // Convert output to CSV
-        try {
-            PrintWriter writer = new PrintWriter("data.csv");
-            writer.println("Run,Bellman-Ford,Floyd-Warshall");
-            for (int i = 0; i < numOfGraphs * iterationCount; i++) {
-                writer.println((i + 1) + "," + bellmanFordTime.get(i) + "," + floydWarshallTime.get(i));
-            }
-            writer.close();
-        } catch (FileNotFoundException _) {}
     }
 
     // This is the function where data is converted from text to graph and vertex objects
