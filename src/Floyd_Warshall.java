@@ -114,7 +114,32 @@ public class Floyd_Warshall {
                     }
                 }
             }
+
+            // Invariant testing - loop through each row
+            for (int row = 0; row < matrixSize; row++) {
+
+                // Check 1: Negative cycle check - negative value in distance matrix diagonal means negative cycle exists
+                assert distMatrix[row][row] >= 0 : "Invariant Violated: Negative cycle detected at node " + row;
+
+                // Loop through the elements in each row
+                for (int col = 0; col < matrixSize; col++) {
+
+                    // Check 2: Intermediate distance check
+                    // Use if-statement to make sure that the path through intermediary node exists
+                    if (distMatrix[row][middle] != Double.POSITIVE_INFINITY
+                            && distMatrix[middle][col] != Double.POSITIVE_INFINITY) {
+
+                        // Perform checking to see if a shorter distance can be found
+                        assert distMatrix[row][col] <= distMatrix[row][middle] + distMatrix[middle][col] :
+                                "Invariant Violated: Path through " + middle + " is shorter but not updated!";
+                    }
+                }
+            }
+
+            // Output that checking passes
+            System.out.println("Invariant checking [Iteration " + (middle + 1) + "]: PASS");
         }
+        System.out.println();
 
         // Algorithm ends here. Remaining is just to retrieve the shortest path (guess should not be included in complexity calculation)
         // Record time
