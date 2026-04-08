@@ -113,9 +113,8 @@ public class Bellman_Ford {
 			if (invariant) {
 				for (EdgeIndex e : edges) {
 					if (dist[e.startIndex] != Double.POSITIVE_INFINITY) {
-						if (dist[e.endIndex] > dist[e.startIndex] + e.weight) {
-							System.out.println("Invariant violated at edge: " + e);
-						}
+						assert (dist[e.endIndex] > dist[e.startIndex] + e.weight):
+								"Invariant violated at edge: " + e;
 					}
 				}
 			}
@@ -123,18 +122,16 @@ public class Bellman_Ford {
 			// Invariant: distances should never increase after relaxation
 			if (invariant) {
 				for (int j = 0; j < dist.length; j++) {
-					if (dist[j] > prevDist[j]) {
-						System.out.println("Invariant violated: distance increased!");
-					}
+					assert (dist[j] > prevDist[j]):
+						"Invariant violated: distance increased!";
 				}
 			}
 
 			// Invariant: if a node is unreachable in the previous iteration, its distance should remain ∞
 			if (invariant) {
 				for (int j = 0; j < dist.length; j++) {
-					if (prev[j] == -1 && j != startIdx && dist[j] != Double.POSITIVE_INFINITY) {
-						System.out.println("Invariant warning: unexpected reachable node");
-					}
+					assert (prev[j] == -1 && j != startIdx && dist[j] != Double.POSITIVE_INFINITY):
+						"Invariant warning: unexpected reachable node";
 				}
 			}
 
