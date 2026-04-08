@@ -10,8 +10,8 @@ public class Bellman_Ford {
 		return getShortestPath(graph, start, destination, false);
 	}
 
-	// Overload with a debug flag for invariant testing
-	public static String getShortestPath(Graph graph, Graph.Vertex start, Graph.Vertex destination, boolean debug) {
+	// Overload with a invariant flag for invariant testing
+	public static String getShortestPath(Graph graph, Graph.Vertex start, Graph.Vertex destination, boolean invariant) {
 
 		if (graph == null || start == null || destination == null) {
 			return "Error. Invalid input.";
@@ -83,7 +83,7 @@ public class Bellman_Ford {
 		// Loop through each vertex
 		for (int i = 0; i < verticesCount - 1; i++) {
 
-			double[] prevDist = debug ? Arrays.copyOf(dist, dist.length) : null;
+			double[] prevDist = invariant ? Arrays.copyOf(dist, dist.length) : null;
 
 			// Check all edges
 			for (EdgeIndex edge : edges) {
@@ -109,7 +109,8 @@ public class Bellman_Ford {
 				}
 			}
 
-			if (debug) {
+			// Invariant: relaxation consistency check
+			if (invariant) {
 				for (EdgeIndex e : edges) {
 					if (dist[e.startIndex] != Double.POSITIVE_INFINITY) {
 						if (dist[e.endIndex] > dist[e.startIndex] + e.weight) {
@@ -119,7 +120,8 @@ public class Bellman_Ford {
 				}
 			}
 
-			if (debug) {
+			// Invariant: distances should never increase after relaxation
+			if (invariant) {
 				for (int j = 0; j < dist.length; j++) {
 					if (dist[j] > prevDist[j]) {
 						System.out.println("Invariant violated: distance increased!");
@@ -127,7 +129,8 @@ public class Bellman_Ford {
 				}
 			}
 
-			if (debug) {
+			// Invariant: if a node is unreachable in the previous iteration, its distance should remain ∞
+			if (invariant) {
 				for (int j = 0; j < dist.length; j++) {
 					if (prev[j] == -1 && j != startIdx && dist[j] != Double.POSITIVE_INFINITY) {
 						System.out.println("Invariant warning: unexpected reachable node");
