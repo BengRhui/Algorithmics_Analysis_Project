@@ -25,6 +25,9 @@ public class Main {
         [(A,B,3); (A,C,2); (A,D,4); (B,C,1); (B,E,5); (C,D,3); (C,F,6); (D,E,2); (E,F,1); (F,A,4); (D,F,2)] | A | F
         """;
 
+        // Run correctness checks before timing benchmarks
+        runBellmanEmpirical();
+
         // Convert the string data into graph and vertex objects
         preprocessing_steps(example_input);
 
@@ -84,6 +87,68 @@ public class Main {
             }
             writer.close();
         } catch (FileNotFoundException _) {}
+    }
+
+    // Empirical test cases for Bellman-Ford correctness
+    public static void runBellmanEmpirical() {
+        System.out.println("Running Empirical Tests...\n");
+
+        int pass = 0;
+        int total = 4;
+
+        // Test 1: Normal case, shortest path A -> C -> B = 3
+        Graph g1 = new Graph("[(A,B,4); (A,C,2); (C,B,1)]");
+        Graph.Vertex e1Start = Graph.Vertex.find("A");
+        Graph.Vertex e1End = Graph.Vertex.find("B");
+        String result1 = (e1Start == null || e1End == null)
+                ? "Error. Test setup failed."
+                : Bellman_Ford.getShortestPath(g1, e1Start, e1End);
+        boolean test1 = result1.contains("is: 3.0") || result1.contains("is: 3");
+        System.out.println("Test 1 Result:\n" + result1);
+        System.out.println("Expected: Distance = 3");
+        System.out.println("PASS = " + test1 + "\n");
+        if (test1) pass++;
+
+        // Test 2: No path from X to Y
+        Graph g2 = new Graph("[(X,Z,1); (W,Y,1)]");
+        Graph.Vertex e2Start = Graph.Vertex.find("X");
+        Graph.Vertex e2End = Graph.Vertex.find("Y");
+        String result2 = (e2Start == null || e2End == null)
+                ? "Error. Test setup failed."
+                : Bellman_Ford.getShortestPath(g2, e2Start, e2End);
+        boolean test2 = result2.contains("Not found") || result2.contains("No path");
+        System.out.println("Test 2 Result:\n" + result2);
+        System.out.println("Expected: Not found");
+        System.out.println("PASS = " + test2 + "\n");
+        if (test2) pass++;
+
+        // Test 3: Negative edge is supported, R -> Q -> R = 1
+        Graph g3 = new Graph("[(P,Q,-2); (Q,R,3)]");
+        Graph.Vertex e3Start = Graph.Vertex.find("P");
+        Graph.Vertex e3End = Graph.Vertex.find("R");
+        String result3 = (e3Start == null || e3End == null)
+                ? "Error. Test setup failed."
+                : Bellman_Ford.getShortestPath(g3, e3Start, e3End);
+        boolean test3 = result3.contains("is: 1.0") || result3.contains("is: 1");
+        System.out.println("Test 3 Result:\n" + result3);
+        System.out.println("Expected: Distance = 1");
+        System.out.println("PASS = " + test3 + "\n");
+        if (test3) pass++;
+
+        // Test 4: Negative cycle should be detected
+        Graph g4 = new Graph("[(U,V,1); (V,U,-2)]");
+        Graph.Vertex e4Start = Graph.Vertex.find("U");
+        Graph.Vertex e4End = Graph.Vertex.find("V");
+        String result4 = (e4Start == null || e4End == null)
+                ? "Error. Test setup failed."
+                : Bellman_Ford.getShortestPath(g4, e4Start, e4End);
+        boolean test4 = result4.toLowerCase().contains("negative cycle");
+        System.out.println("Test 4 Result:\n" + result4);
+        System.out.println("Expected: Negative cycle detected");
+        System.out.println("PASS = " + test4 + "\n");
+        if (test4) pass++;
+
+        System.out.println("Empirical Tests Passed: " + pass + "/" + total + "\n");
     }
 
     // This is the function where data is converted from text to graph and vertex objects

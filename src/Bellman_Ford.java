@@ -7,6 +7,15 @@ public class Bellman_Ford {
 
 	// Bellman-Ford is to find the shortest path with early stop when no edges relax
 	public static String getShortestPath(Graph graph, Graph.Vertex start, Graph.Vertex destination) {
+		return getShortestPath(graph, start, destination, false);
+	}
+
+	// Overload with a debug flag for invariant testing
+	public static String getShortestPath(Graph graph, Graph.Vertex start, Graph.Vertex destination, boolean debug) {
+
+		if (graph == null || start == null || destination == null) {
+			return "Error. Invalid input.";
+		}
 
 		// First, we sort the vertices and get the number of vertices
 		ArrayList<Graph.Vertex> vertices = graph.getSortedVertices();
@@ -74,8 +83,16 @@ public class Bellman_Ford {
 		// Loop through each vertex
 		for (int i = 0; i < verticesCount - 1; i++) {
 
+			double[] prevDist = debug ? Arrays.copyOf(dist, dist.length) : null;
+
 			// Check all edges
 			for (EdgeIndex edge : edges) {
+
+				// Invariant: edge indices must always be valid
+				if (edge.startIndex < 0 || edge.startIndex >= verticesCount ||
+						edge.endIndex < 0 || edge.endIndex >= verticesCount) {
+					return "Error. Algorithm invariant violated.";
+				}
 
 				// If infinity, this indicates that the starting node is not reachable, hence skipped
 				if (dist[edge.startIndex] == Double.POSITIVE_INFINITY) continue;
@@ -91,6 +108,33 @@ public class Bellman_Ford {
 					prev[edge.endIndex] = edge.startIndex;
 				}
 			}
+
+			if (debug) {
+				for (EdgeIndex e : edges) {
+					if (dist[e.startIndex] != Double.POSITIVE_INFINITY) {
+						if (dist[e.endIndex] > dist[e.startIndex] + e.weight) {
+							System.out.println("Invariant violated at edge: " + e);
+						}
+					}
+				}
+			}
+
+			if (debug) {
+				for (int j = 0; j < dist.length; j++) {
+					if (dist[j] > prevDist[j]) {
+						System.out.println("Invariant violated: distance increased!");
+					}
+				}
+			}
+
+			if (debug) {
+				for (int j = 0; j < dist.length; j++) {
+					if (prev[j] == -1 && j != startIdx && dist[j] != Double.POSITIVE_INFINITY) {
+						System.out.println("Invariant warning: unexpected reachable node");
+					}
+				}
+			}
+
 		}
 
 		// Record time
@@ -131,6 +175,10 @@ public class Bellman_Ford {
 
 		// If a path does not exist, the predecessor array has value -1
 		while (current != -1) {
+
+			if (current < 0 || current >= verticesCount) {
+				return "Error. Algorithm invariant violated.";
+			}
 
 			// Add the vertex to the front of the array
 			path.addFirst(vertices.get(current).label());
